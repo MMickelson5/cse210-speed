@@ -2,6 +2,7 @@ from time import sleep
 from game import constants
 from game.score import Score
 from game.word import Word
+from game.buffer import Buffer
 
 class Director:
     """A code template for a person who directs the game. The responsibility of 
@@ -28,6 +29,7 @@ class Director:
         self._keep_playing = True
         self._output_service = output_service
         self._score = Score()
+        self._buffer = Buffer()
         self._word = Word()
         
     def start_game(self):
@@ -49,7 +51,10 @@ class Director:
         Args:
             self (Director): An instance of Director.
         """
-        self._input_service.get_letter()
+        event = self._input_service.get_letter()
+        if event is False:
+            self._reset()
+        self._buffer.set_word(event)
 
     def _do_updates(self):
         """Updates the important game information for each round of play. In 
@@ -71,6 +76,7 @@ class Director:
         self._output_service.clear_screen()
         self._output_service.draw_actor(self._word)
         self._output_service.draw_actor(self._score)
+        self._output_service.draw_actor(self._buffer)
         self._output_service.flush_buffer()
 
     def _check_word(self):
@@ -78,5 +84,8 @@ class Director:
             points = self._word.get_points()
             self._score.add_points(points)
             self._word.reset()
-            self._input_service.reset()
-            
+            self._reset()
+    
+    def _reset(self):
+        self._buffer.reset()
+        self._input_service.reset()
