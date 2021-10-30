@@ -30,16 +30,16 @@ class InputService:
             string: The letter that was typed.
         """
         event = self._screen.get_key()
+        
         if not event is None:
-            if event == 27:
+            if event >= 97 and event <= 122:
+                self._result += chr(event)
+                return event
+            elif event == 13:
+                return False
+            elif event == 27:
                 sys.exit()
                 
-            elif event == 10: 
-                self.reset()
-            
-            elif event >= 97 and event <= 122:
-                self._result += chr(event)
-
     def get_result(self):
         return self._result
     

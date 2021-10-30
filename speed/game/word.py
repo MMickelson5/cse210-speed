@@ -24,8 +24,8 @@ class Word(Actor):
     
     def reset(self):
         self.set_text(random.choice(constants.LIBRARY))
-        self.set_position(Point(random.randint(1, constants.MAX_X - 2), random.randint(1, constants.MAX_Y - 2)))
-        self._points = random.randint(1, 5)
+        self.set_position(Point(random.randint(1, constants.MAX_X - 2), random.randint(3, constants.MAX_Y - 2)))
+        self._points = len(self.get_text())
     
     def get_points(self):
         return self._points
