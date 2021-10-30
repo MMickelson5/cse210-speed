@@ -35,7 +35,7 @@ class InputService:
             if event >= 97 and event <= 122:
                 self._result += chr(event)
                 return event
-            elif event == 10:
+            elif event == 13:
                 return False
             elif event == 27:
                 sys.exit()

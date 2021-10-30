@@ -1,4 +1,3 @@
-import random
 from game.actor import Actor
 from game.point import Point
 
@@ -31,4 +30,4 @@ class Buffer(Actor):
     
     def reset(self):
         self._word = ""
-        self.set_text(f"Buffer: {self._word}")
+        self.set_text(f"Buffer: ")

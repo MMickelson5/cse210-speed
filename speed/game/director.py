@@ -54,6 +54,7 @@ class Director:
         event = self._input_service.get_letter()
         if event is False:
             self._reset()
+            self._output()
         self._buffer.set_word(event)
 
     def _do_updates(self):
@@ -73,11 +74,7 @@ class Director:
         Args:
             self (Director): An instance of Director.
         """
-        self._output_service.clear_screen()
-        self._output_service.draw_actor(self._word)
-        self._output_service.draw_actor(self._score)
-        self._output_service.draw_actor(self._buffer)
-        self._output_service.flush_buffer()
+        self._output()
 
     def _check_word(self):
         if self._input_service.get_result() == self._word.get_text():
@@ -89,3 +86,10 @@ class Director:
     def _reset(self):
         self._buffer.reset()
         self._input_service.reset()
+    
+    def _output(self):
+        self._output_service.clear_screen()
+        self._output_service.draw_actor(self._word)
+        self._output_service.draw_actor(self._score)
+        self._output_service.draw_actor(self._buffer)
+        self._output_service.flush_buffer()
