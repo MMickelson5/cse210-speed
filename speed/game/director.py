@@ -25,12 +25,16 @@ class Director:
         Args:
             self (Director): an instance of Director.
         """
+        self._words = []
         self._input_service = input_service
         self._keep_playing = True
         self._output_service = output_service
         self._score = Score()
         self._buffer = Buffer()
-        self._word = Word()
+        for i in range(constants.STARTING_WORDS):
+            word = Word()
+            self._words.append(word)
+            
         
     def start_game(self):
         """Starts the game loop to control the sequence of play.
@@ -77,11 +81,15 @@ class Director:
         self._output()
 
     def _check_word(self):
-        if self._input_service.get_result() == self._word.get_text():
-            points = self._word.get_points()
-            self._score.add_points(points)
-            self._word.reset()
-            self._reset()
+        
+        for i in self._words:
+            word = i.get_text()
+        
+            if self._input_service.get_result() == word:
+                points = i.get_points()
+                self._score.add_points(points)
+                i.reset()
+                self._reset()
     
     def _reset(self):
         self._buffer.reset()
@@ -89,7 +97,7 @@ class Director:
     
     def _output(self):
         self._output_service.clear_screen()
-        self._output_service.draw_actor(self._word)
+        self._output_service.draw_actors(self._words)
         self._output_service.draw_actor(self._score)
         self._output_service.draw_actor(self._buffer)
         self._output_service.flush_buffer()
