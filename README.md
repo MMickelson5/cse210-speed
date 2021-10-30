@@ -41,4 +41,6 @@ root                    (project root folder)
 ## Authors
 ---
 * Jorge Flores - jafc120@gmail.com
-
+* Coty Fivecoat - fiveoat@gmail.com
+* Mark Mickelson - mmickelson108@gmail.com
+* Victor Daniel Gauna -

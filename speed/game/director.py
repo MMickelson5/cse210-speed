@@ -1,18 +1,18 @@
-from time import sleep
 from game import constants
-from game.score import Score
+from time import sleep
 from game.word import Word
+from game.score import Score
 from game.buffer import Buffer
 
+
 class Director:
-    """A code template for a person who directs the game. The responsibility of 
+    """A code template for a person who directs the game. The responsibility of
     this class of objects is to control the sequence of play.
-    
+
     Stereotype:
         Controller
-
     Attributes:
-        word (Word): The users target to write.
+        word (Word): The player's goal.
         input_service (InputService): The input mechanism.
         keep_playing (boolean): Whether or not the game can continue.
         output_service (OutputService): The output mechanism.
@@ -21,83 +21,69 @@ class Director:
 
     def __init__(self, input_service, output_service):
         """The class constructor.
-        
+
         Args:
             self (Director): an instance of Director.
         """
-        self._words = []
-        self._input_service = input_service
+        self._words = [Word(), Word(), Word(), Word(), Word()]
+        self.score = Score()
+        self._buffer = Buffer()
         self._keep_playing = True
         self._output_service = output_service
-        self._score = Score()
-        self._buffer = Buffer()
-        for i in range(constants.STARTING_WORDS):
-            word = Word()
-            self._words.append(word)
-            
-        
+        self._input_service = input_service
+
     def start_game(self):
         """Starts the game loop to control the sequence of play.
-        
+
         Args:
             self (Director): an instance of Director.
         """
         while self._keep_playing:
-            self._get_inputs()
-            self._do_updates()
-            self._do_outputs()
+            self.get_inputs()
+            self.do_updates()
+            self.do_outputs()
             sleep(constants.FRAME_LENGTH)
 
-    def _get_inputs(self):
+    def get_inputs(self):
         """Gets the inputs at the beginning of each round of play. In this case,
-        that means getting the desired direction and moving the snake.
-
+        that means getting the desired word and capturing the player input by getting
+        the letter.
         Args:
             self (Director): An instance of Director.
         """
-        event = self._input_service.get_letter()
-        if event is False:
-            self._reset()
-            self._output()
-        self._buffer.set_word(event)
+        letter = self._input_service.get_letter()
+        if letter not in ["ENTER", "BACKSPACE"]:
+            self._buffer.add_letter(letter)
+        if letter == 'ENTER':
+            self._buffer.clear()
+        elif letter == "BACKSPACE":
+            self._buffer.backspace()
 
-    def _do_updates(self):
-        """Updates the important game information for each round of play. In 
-        this case, that means checking for a collision and updating the score.
-
+    def do_updates(self):
+        """Updates the important game information for each round of play. In
+        this case, that means adding a letter to the buffer, checking words against
+        the dictionary for boolean, and updating points when passed.
         Args:
             self (Director): An instance of Director.
         """
-        self._check_word()
-        
-    def _do_outputs(self):
-        """Outputs the important game information for each round of play. In 
-        this case, that means checking if there are stones left and declaring 
-        the winner.
+        for word in self._words:
+            word.move()
+            if word.check_guess(self._buffer.get_buffer()):
+                self._buffer.clear()
+                self.score.add_points(len(word.get_word()))
+                word.reset()
+            if word.get_position().get_x() > constants.MAX_X - len(word.get_word()):
+                word.reset()
 
+    def do_outputs(self):
+        """Outputs the important game information for each round of play. In
+        this case, that means checking if there are words remaining and displaying
+        the proper information (i.e. words and points).
         Args:
             self (Director): An instance of Director.
         """
-        self._output()
-
-    def _check_word(self):
-        
-        for i in self._words:
-            word = i.get_text()
-        
-            if self._input_service.get_result() == word:
-                points = i.get_points()
-                self._score.add_points(points)
-                i.reset()
-                self._reset()
-    
-    def _reset(self):
-        self._buffer.reset()
-        self._input_service.reset()
-    
-    def _output(self):
         self._output_service.clear_screen()
+        self._output_service.draw_actor(self.score)
         self._output_service.draw_actors(self._words)
-        self._output_service.draw_actor(self._score)
         self._output_service.draw_actor(self._buffer)
         self._output_service.flush_buffer()
