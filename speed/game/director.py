@@ -83,12 +83,12 @@ class Director:
     def _check_word(self):
         
         for i in self._words:
-            word = self._words[i].get_text()
+            word = i.get_text()
         
             if self._input_service.get_result() == word:
-                points = self._words[i].get_points()
+                points = i.get_points()
                 self._score.add_points(points)
-                self._words[i].reset()
+                i.reset()
                 self._reset()
     
     def _reset(self):
